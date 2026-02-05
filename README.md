@@ -258,7 +258,7 @@ DIVIDE(
 # Key Insights & Visualization
 
 ## I. Executive Overview: Financial Performance
-*[Dashboard screenshot will be inserted here]*
+![Executive Overview](assets/finance_report)
 
 ### Key Findings:
 
@@ -279,7 +279,7 @@ DIVIDE(
     => **Healthy margins provide runway for growth investment**
 
 ## II. Marketing & Funnel Performance: Channel Efficiency
-*[Dashboard screenshot will be inserted here]*
+![Marketing & Funnel Performance](assets/marketing_report)
 
 ### Key Findings:
 
@@ -350,7 +350,7 @@ DIVIDE(
     => **Simplify checkout flow: reduce required fields, show all costs upfront, enable guest checkout, add payment security badges, improve error messaging.**
 
 ## III. Product Analysis: Profitability & Refund Risk
-*[Dashboard screenshot will be inserted here]*
+![Product Analysis](assets/product_report)
 
 ### Key Findings:
 
