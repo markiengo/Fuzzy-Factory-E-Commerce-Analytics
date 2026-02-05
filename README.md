@@ -61,8 +61,6 @@
 | `products.csv` | Product catalogue with names, categories and costs | Product |
 
 ## Data Relationships
-*[Star schema diagram will be inserted here]*
-
 
 
 # Data Modeling (Star Schema)
@@ -81,7 +79,7 @@ I followed the principles of **star schema**. This separates dimensions (descrip
 - **`fact_funnel_performance`** – Session grain with flags for each funnel step (landing page view, catalog view, product detail view, add to cart, shipping, checkout, purchase)
 
 ## Transformed Data Model 
-
+![Transformed Star Schema](assets/transformed_model)
 
 # Data Processing & Metric Definitions (DAX)
 
