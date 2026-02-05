@@ -1,4 +1,4 @@
-# Fuzzy Factory E-Commerce Analytics: Revenue, Funnel & Marketing Performance (2012-2015)
+# Fuzzy Factory E-Commerce Analytics: Revenue, Product & Marketing Performance (2012-2015)
 - Author: Markie Ngo **(Data Analyst)**
 - Date: 02/2026
 - Tool Used: **SQL Server**, **Power BI**, **Excel**
