@@ -67,7 +67,7 @@ Understanding how visitors arrive, navigate the purchase funnel, and convert int
 | `products.csv` | Product catalogue with names, categories and costs | Product |
 
 ## Data Relationships
-![Data Relationships](assets/original_rdbm.png)
+![Data Relationships](assets/original_rdbm)
 
 # Data Modeling (Star Schema)
 
@@ -85,7 +85,7 @@ I followed the principles of **star schema**. This separates dimensions (descrip
 - **`fact_funnel_performance`** – Session grain with flags for each funnel step (landing page view, catalog view, product detail view, add to cart, shipping, checkout, purchase)
 
 ## Transformed Data Model 
-![Transformed Star Schema](assets/transformed_model.png)
+![Transformed Star Schema](assets/transformed_model)
 
 # Data Processing & Metric Definitions (DAX)
 
@@ -233,7 +233,7 @@ DIVIDE(
 # Key Insights & Visualization
 
 ## I. Executive Overview: Financial Performance
-![Executive Overview](assets/finance_report.png)
+![Executive Overview](assets/finance_report)
 
 ### Key Findings:
 
@@ -257,7 +257,7 @@ DIVIDE(
     => **Business has achieved profitable scale with healthy margins, providing runway for growth investment in conversion optimization and new products.**
 
 ## II. Marketing & Funnel Performance
-![Marketing & Funnel Performance](assets/marketing_report.png)
+![Marketing & Funnel Performance](assets/marketing_report)
 
 ### Key Findings
 
@@ -371,7 +371,7 @@ DIVIDE(
 ---
 
 ## III. Product Analysis: Profitability & Refund Risk
-![Product Analysis](assets/product_report.png)
+![Product Analysis](assets/product_report)
 
 ### Key Findings:
 
