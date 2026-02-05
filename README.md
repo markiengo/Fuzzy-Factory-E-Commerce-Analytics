@@ -61,7 +61,7 @@
 | `products.csv` | Product catalogue with names, categories and costs | Product |
 
 ## Data Relationships
-
+![Data Relationships](assets/original_rdbm)
 
 # Data Modeling (Star Schema)
 
@@ -279,73 +279,84 @@ DIVIDE(
 ## II. Marketing & Funnel Performance: Channel Efficiency
 ![Marketing & Funnel Performance](assets/marketing_report)
 
-### Key Findings:
+### Key Findings
 
-1. **Channel Efficiency**:
-    
-    | Channel | Sessions | Net Revenue | CVR | RPS |
-    |---------|----------|-------------|-----|-----|
-    | gsearch nonbrand | 282,706 | $1,068,211 | 6.42% | $3.78 |
-    | bsearch brand | 36,854 | $192,058 | 8.86% | $5.21 |
-    | paid social | 10,688 | $21,227 | 3.21% | $1.99 |
-    
-    => **Brand search = highest efficiency. Nonbrand = growth engine. Social = underperforming (fix or cut).**
+### 1. Channel Efficiency
 
-2. **Traffic Quality vs. Volume**:
-    - High-volume channels (nonbrand search) can still be efficient if conversion rates are healthy
-    - Brand search converts nearly 3x better than social despite being paid traffic
-    - Direct and organic channels show strong engagement and conversion
+| Channel | Sessions | Net Revenue | CVR | RPS |
+|---------|----------|-------------|-----|-----|
+| gsearch nonbrand | 282,706 | $1,068,211 | 6.42% | $3.78 |
+| bsearch brand | 36,854 | $192,058 | 8.86% | $5.21 |
+| paid social | 10,688 | $21,227 | 3.21% | $1.99 |
 
-    => **Marketing budget should prioritize channels with high RPS (brand search, organic) while continuing to scale proven performers (nonbrand search).**
+- Brand search = highest efficiency  
+- Nonbrand search = growth engine  
+- Paid social = weakest performer  
 
-3. **Conversion Funnel Analysis**:
-    - Total sessions: **473,000**
-    - Overall conversion rate: **6.81%**
-    
-    **Funnel step-by-step breakdown**:
-    - Landing Page → Catalog: **261K** (55% of sessions reach catalog)
-    - Catalog → Product Detail: **210K** (80% progression)
-    - Product Detail → Cart: **95K** (45% progression) **← LARGEST DROP-OFF**
-    - Cart → Shipping: **64K** (67% progression)
-    - Shipping → Checkout: **52K** (81% progression)
-    - Checkout → Purchase: **32K** (62% progression) **← SECOND LARGEST DROP-OFF**
+**Action:** Prioritize brand + organic. Scale nonbrand. Fix or cut social.
 
-    => **Two critical optimization opportunities: (1) Product Detail to Cart - need stronger CTAs, clearer value props, trust signals. (2) Checkout to Purchase - reduce form friction, offer guest checkout, simplify payment flow.**
+---
 
-4. **Device Performance Gap**:
-    - Desktop carries majority of sessions
-    - Mobile conversion rates are persistently lower than desktop across all months
-    - Mobile represents untapped revenue opportunity from existing traffic
+### 2. Traffic Quality vs Volume
 
-    => **Mobile experience needs targeted improvements: faster load times, mobile-first checkout, simplified forms, sticky CTAs.**
-   
-5. **Landing Page Performance**:
-    - 55% of sessions reach the catalog page
-    - 45% bounce or exit before viewing products
-    - Landing page effectiveness varies significantly by channel
+- High volume can still be efficient (nonbrand proves this)  
+- Brand search converts ~3× better than social  
+- Direct and organic show strong engagement  
 
-    => **Optimize landing page relevance by channel. Ensure paid search ads align with landing page messaging. Test different landing page variations for high-bounce channels.**
+**Action:** Allocate budget using **RPS**, not sessions.
 
-6. **Product Detail Page (PDP) Optimization**:
-    - Only 45% of product viewers add to cart (biggest drop-off point)
-    - Clear opportunity for improvement through:
-      - Stronger calls-to-action
-      - More prominent pricing and shipping information
-      - Enhanced product images and descriptions
-      - Trust signals (reviews, guarantees, badges)
-      - Visibility of stock levels and urgency cues
+---
 
-    => **PDP improvements represent the highest-leverage conversion opportunity. A/B test CTA placement, product copy, and image quality.**
+### 3. Conversion Funnel
 
-7. **Checkout Abandonment**:
-    - 38% of users abandon at checkout (second biggest drop-off)
-    - Common reasons likely include:
-      - Form complexity (too many required fields)
-      - Unexpected costs (shipping, taxes)
-      - Lack of guest checkout option
-      - Payment security concerns
+- Total sessions: **473K**  
+- Overall CVR: **6.81%**
 
-    => **Simplify checkout flow: reduce required fields, show all costs upfront, enable guest checkout, add payment security badges, improve error messaging.**
+| Step | Users | Progression |
+|------|------|-------------|
+| Landing → Catalog | 261K | 55% |
+| Catalog → Product | 210K | 80% |
+| Product → Cart | 95K | 45% (Largest drop-off) |
+| Cart → Shipping | 64K | 67% |
+| Shipping → Checkout | 52K | 81% |
+| Checkout → Purchase | 32K | 62% (Second largest drop-off) |
+
+**Action:** Highest-impact fixes = Product page → Cart and Checkout → Purchase.
+
+---
+
+### 4. Device Performance Gap
+
+- Desktop drives most sessions  
+- Mobile CVR consistently lower  
+
+**Action:** Mobile-first checkout, faster pages, simplified forms.
+
+---
+
+### 5. Landing Page Performance
+
+- 45% exit before reaching catalog  
+- Performance varies by channel  
+
+**Action:** Align landing pages with traffic intent. Test variants for high-bounce channels.
+
+---
+
+### 6. Product Detail Page (Largest Lever)
+
+- Only 45% of viewers add to cart  
+
+**Action:** Stronger CTAs, clearer value, shipping visibility, better images, trust signals.
+
+---
+
+### 7. Checkout Abandonment
+
+- 38% abandon at checkout  
+
+**Action:** Fewer fields, guest checkout, upfront costs, better payment UX.
+
 
 ## III. Product Analysis: Profitability & Refund Risk
 ![Product Analysis](assets/product_report)
