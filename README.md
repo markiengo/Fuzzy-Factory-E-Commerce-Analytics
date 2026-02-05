@@ -8,7 +8,7 @@
 
 
 
-# Table Of Contents (TOCS)
+# Table Of Contents
 1. [Executive Summary](#executive-summary)
 2. [Background & Objectives](#background--objectives)
 3. [Dataset Description](#dataset-description)
@@ -17,21 +17,27 @@
 6. [Defining Key Questions before Data Visualization](#defining-key-questions-before-data-visualization)
 7. [Key Insights & Visualization](#key-insights--visualization)
 8. [Recommendations by Stakeholder](#recommendations-by-stakeholder)
+9. [Setup Instructions](#setup-instructions)
+10. [Key Takeaways](#key-takeaways)
 
 # Executive Summary 
-- This project develops a comprehensive Business Intelligence system for Fuzzy Factory, an e-commerce shop selling plush toys online.
-- Using behavioral data from **480K+ web sessions** and **1M+ pageviews**, combined with transactional data from **32K+ orders**, the analysis helps business leaders:
-  - Evaluate financial performance and profitability over time
-  - Identify which marketing channels drive high-quality traffic and revenue
-  - Diagnose conversion funnel drop-offs and optimize customer journey
-  - Understand product-level profitability and refund risk
-- The objective is to enable data-driven decisions on marketing spend allocation, funnel optimization, and product strategy to drive profitable growth.
+This project builds a comprehensive BI system for Fuzzy Factory, an e-commerce shop selling plush toys online.
+
+Using behavioral data from **480K+ web sessions** and **1M+ pageviews**, combined with transactional data from **32K+ orders**, the analysis helps business leaders:
+- Evaluate financial performance and profitability over time
+- Identify which marketing channels drive high-quality traffic and revenue
+- Diagnose conversion funnel drop-offs and optimize customer journey
+- Understand product-level profitability and refund risk
+
+The objective: Enable data-driven decisions on marketing spend allocation, funnel optimization, and product strategy to drive profitable growth.
 
 # Background & Objectives
 ## Background: 
-- Fuzzy Factory is growing its online business by investing heavily in digital marketing across multiple channels (paid search, organic, social, email).
-- Leadership wants to ensure that growth is not just about traffic volume, but about efficient, profitable, and sustainable revenue generation.
-- Understanding how visitors arrive, navigate the purchase funnel, and convert into paying customers is critical for optimizing marketing spend and operational efficiency.
+Fuzzy Factory is growing its online business by investing heavily in digital marketing across multiple channels (paid search, organic, social, email).
+
+Leadership wants to ensure that growth is not just about traffic volume, but about efficient, profitable, and sustainable revenue generation.
+
+Understanding how visitors arrive, navigate the purchase funnel, and convert into paying customers is critical for optimizing marketing spend and operational efficiency.
 
 ## Four Core Requirements from Leadership:
 1. Evaluate financial performance: revenue, profit, margin trends over time
@@ -47,21 +53,21 @@
   - **1M+ pageviews** tracking user navigation through the site
   - **32K+ completed orders** with detailed transaction records
   - **63K+ order line items** with pricing and cost information
-- Format: CSV files
+- Format: CSV files (some compressed as .gz due to size)
 - Time Period: Multi-year operations (2012-2015)
 
 ## Data Tables:
 | Table | Description | Grain |
 |-------|-------------|-------|
-| `website_sessions.csv` | Each row records a unique user session on the site, including device and traffic source | Session |
-| `website_pageviews.csv` | All pageviews within each session, showing how users move through the funnel | Pageview |
+| `website_sessions.csv.gz` | Each row records a unique user session on the site, including device and traffic source | Session |
+| `website_pageviews.csv.gz` | All pageviews within each session, showing how users move through the funnel | Pageview |
 | `orders.csv` | Completed orders with order-level detail (customer, timestamp, status) | Order |
 | `order_items.csv` | Items within each order; contains price, cost and product information | Order item |
 | `order_item_refunds.csv` | Refund transactions linked to order items | Refund transaction |
 | `products.csv` | Product catalogue with names, categories and costs | Product |
 
 ## Data Relationships
-![Data Relationships](assets/original_rdbm)
+![Data Relationships](assets/original_rdbm.png)
 
 # Data Modeling (Star Schema)
 
@@ -79,7 +85,7 @@ I followed the principles of **star schema**. This separates dimensions (descrip
 - **`fact_funnel_performance`** – Session grain with flags for each funnel step (landing page view, catalog view, product detail view, add to cart, shipping, checkout, purchase)
 
 ## Transformed Data Model 
-![Transformed Star Schema](assets/transformed_model)
+![Transformed Star Schema](assets/transformed_model.png)
 
 # Data Processing & Metric Definitions (DAX)
 
@@ -99,32 +105,10 @@ I followed the principles of **star schema**. This separates dimensions (descrip
 ## Key DAX Formulas
 
 <details>
-  <summary>Click to view examples of DAX formulas</summary>
+  <summary>Financial Metrics</summary>
   <br>
 
-### Financial Metrics
-
-**Net Margin %**: Profit as percentage of net revenue
-```dax
-Net Margin % = 
-DIVIDE(
-    [Profit],
-    [Net Revenue],
-    0
-)
 ```
-
-**Refund Rate %**: Percentage of orders that were refunded
-```dax
-Refund Rate % = 
-DIVIDE(
-    CALCULATE(COUNT(fact_sales[order_item_id]), fact_sales[refund_flag] = 1),
-    COUNT(fact_sales[order_item_id]),
-    0
-)
-```
-
-### Order & Customer Metrics
 
 **Average Order Value (AOV)**: Average revenue per order
 ```dax
@@ -146,7 +130,11 @@ DIVIDE(
 )
 ```
 
-### Marketing & Funnel Metrics
+</details>
+
+<details>
+  <summary>Marketing & Funnel Metrics</summary>
+  <br>
 
 **Conversion Rate (CVR)**: Percentage of sessions that result in purchase
 ```dax
@@ -177,22 +165,13 @@ DIVIDE(
     0
 )
 
-Catalog to Product % = 
-DIVIDE(
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[viewed_product] = 1),
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[viewed_catalog] = 1),
-    0
-)
-
-Product to Cart % = 
-DIVIDE(
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[added_to_cart] = 1),
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[viewed_product] = 1),
-    0
-)
 ```
 
-### Product Metrics`
+</details>
+
+<details>
+  <summary>Product Metrics</summary>
+  <br>
 
 **Product Margin %**: Margin percentage by product
 ```dax
@@ -215,9 +194,7 @@ DIVIDE(
 ```
 
 </details>
-
 > All DAX measure definitions are documented in `/docs/dax_measures.md`. The dashboard reconciles these measures back to the SQL layer to ensure data accuracy and trust.
-> 
 
 # Defining Key Questions before Data Visualization
 
@@ -256,7 +233,7 @@ DIVIDE(
 # Key Insights & Visualization
 
 ## I. Executive Overview: Financial Performance
-![Executive Overview](assets/finance_report)
+![Executive Overview](assets/finance_report.png)
 
 ### Key Findings:
 
@@ -264,20 +241,23 @@ DIVIDE(
     - Gross revenue: **$1.93M** | Net revenue: **$1.85M** | Profit: **$1.13M**
     - Net margin: **61.03%** across **32,182 orders**
     - Refund drag: **$77K** (4.33% refund rate)
+    
+    => **Highly profitable business with strong margins. Refunds represent measurable profit leak.**
 
 2. **Order Economics**:
     - AOV: **$57.39** | ASP: **$48.43** | Items/order: **1.24**
     
-    => **Low basket size (1.24 items/order) = untapped cross-sell opportunity**
+    => **Low basket size (1.24 items/order) = untapped cross-sell opportunity. Increasing to 1.5+ items/order would significantly boost revenue without additional traffic acquisition costs.**
 
 3. **Growth Trends**:
-    - Consistent MoM revenue growth with stable profitability
-    - COGS % declining over time (improving unit economics)
+    - Consistent MoM revenue growth with stable profitability across periods
+    - COGS % declining over time (improving unit economics as scale increases)
+    - Margin remains healthy at 61% despite refund drag
     
-    => **Healthy margins provide runway for growth investment**
+    => **Business has achieved profitable scale with healthy margins, providing runway for growth investment in conversion optimization and new products.**
 
-## II. Marketing & Funnel Performance: Channel Efficiency
-![Marketing & Funnel Performance](assets/marketing_report)
+## II. Marketing & Funnel Performance
+![Marketing & Funnel Performance](assets/marketing_report.png)
 
 ### Key Findings
 
@@ -289,21 +269,24 @@ DIVIDE(
 | bsearch brand | 36,854 | $192,058 | 8.86% | $5.21 |
 | paid social | 10,688 | $21,227 | 3.21% | $1.99 |
 
-- Brand search = highest efficiency  
-- Nonbrand search = growth engine  
-- Paid social = weakest performer  
+**What this means:**
+- Brand search = highest efficiency per session but limited scale (brand awareness ceiling)
+- Nonbrand search = growth engine driving volume + revenue (largest channel by both metrics)
+- Paid social = weakest performer on both conversion and revenue per session
 
-**Action:** Prioritize brand + organic. Scale nonbrand. Fix or cut social.
+**Action:** Protect brand search coverage. Scale nonbrand search with intent-focused optimization (keyword quality, landing page relevance). Fix or cut social.
 
 ---
 
 ### 2. Traffic Quality vs Volume
 
-- High volume can still be efficient (nonbrand proves this)  
-- Brand search converts ~3× better than social  
-- Direct and organic show strong engagement  
+- High-volume channels (nonbrand) can still be efficient if conversion rates are healthy
+- Brand search converts nearly 3x better than social (8.86% vs 3.21%) despite being paid traffic
+- Direct and organic channels show strong engagement and conversion (indicates brand strength)
 
-**Action:** Allocate budget using **RPS**, not sessions.
+**What this tells us:** Marketing budget allocation should prioritize RPS (revenue per session), not just session volume. A channel driving 10K sessions at 2% CVR generates less revenue than one with 5K sessions at 8% CVR.
+
+**Action:** Shift budget toward channels with high RPS. Use RPS as primary decision metric for budget allocation.
 
 ---
 
@@ -316,105 +299,210 @@ DIVIDE(
 |------|------|-------------|
 | Landing → Catalog | 261K | 55% |
 | Catalog → Product | 210K | 80% |
-| Product → Cart | 95K | 45% (Largest drop-off) |
+| **Product → Cart** | **95K** | **45%** (Largest drop-off) |
 | Cart → Shipping | 64K | 67% |
 | Shipping → Checkout | 52K | 81% |
-| Checkout → Purchase | 32K | 62% (Second largest drop-off) |
+| **Checkout → Purchase** | **32K** | **62%** (Second largest drop-off) |
 
-**Action:** Highest-impact fixes = Product page → Cart and Checkout → Purchase.
+**What's happening:**
+- 45% bounce at product page = pricing concerns, unclear value prop, lack of trust signals, or friction (unexpected shipping costs)
+- 38% abandon at checkout = form complexity, payment concerns, or unexpected costs revealed too late
+
+**Impact potential:** Fixing Product→Cart from 45% to 60% and Checkout→Purchase from 62% to 75% would increase orders by ~40% (from 32K to 45K+) = **$800K+ annual revenue** without additional traffic spend.
+
+**Action:** Prioritize these two steps for A/B testing and UX improvements. These are the highest-leverage conversion opportunities.
 
 ---
 
 ### 4. Device Performance Gap
 
-- Desktop drives most sessions  
-- Mobile CVR consistently lower  
+- Desktop drives majority of sessions and has higher conversion rates
+- Mobile CVR consistently lower than desktop across all months (persistent gap visible in dashboard)
+- Mobile traffic = untapped revenue opportunity (same acquisition cost, lower conversion)
 
-**Action:** Mobile-first checkout, faster pages, simplified forms.
+**What this means:** Mobile users face friction that desktop users don't - likely smaller screens, slower load times, or checkout forms not optimized for mobile input.
+
+**Action:** Mobile-first optimization = "free" revenue from existing traffic. Focus on mobile checkout UX, page load speed, and simplified forms.
 
 ---
 
 ### 5. Landing Page Performance
 
-- 45% exit before reaching catalog  
-- Performance varies by channel  
+- 45% of sessions exit before reaching catalog (high bounce rate)
+- Landing page effectiveness varies significantly by channel (paid search likely better than social)
+- Misalignment between ad messaging and landing page content drives bounces
 
-**Action:** Align landing pages with traffic intent. Test variants for high-bounce channels.
+**What's happening:** Users click an ad expecting one thing, land on a page showing something different, and leave immediately.
+
+**Action:** Align landing pages with traffic source intent. Test dedicated landing pages for each major channel. Ensure ad copy matches page headline and offer.
 
 ---
 
-### 6. Product Detail Page (Largest Lever)
+### 6. Product Detail Page (Highest-Leverage Opportunity)
 
-- Only 45% of viewers add to cart  
+- Only 45% of product viewers add to cart (lowest progression rate in entire funnel)
+- Clear opportunity for improvement through UX changes
 
-**Action:** Stronger CTAs, clearer value, shipping visibility, better images, trust signals.
+**Common reasons for drop-off:**
+- Weak or unclear call-to-action
+- Shipping costs not visible upfront
+- Poor product images or lack of detail
+- Missing trust signals (reviews, guarantees, security badges)
+- Price concerns without clear value communication
+
+**Action:** Stronger CTAs above fold, show shipping/returns policy upfront, add customer reviews and trust badges, improve product images and descriptions, highlight unique value props.
 
 ---
 
 ### 7. Checkout Abandonment
 
-- 38% abandon at checkout  
+- 38% of users abandon at checkout (second-highest leak)
+- Most checkouts fail due to friction, not intent
 
-**Action:** Fewer fields, guest checkout, upfront costs, better payment UX.
+**Common reasons:**
+- Too many form fields required
+- Unexpected costs revealed (tax, shipping)
+- No guest checkout option (forced account creation)
+- Payment security concerns
+- Poor error messaging when fields are invalid
 
+**Action:** Reduce required fields, enable guest checkout, show all costs upfront, add multiple payment options (PayPal, Apple Pay), improve form validation and error states.
+
+---
 
 ## III. Product Analysis: Profitability & Refund Risk
-![Product Analysis](assets/product_report)
+![Product Analysis](assets/product_report.png)
 
 ### Key Findings:
 
-1. **Product Economics**:
-    
-    | Product | Units | Profit | Margin | Refund Rate |
-    |---------|-------|--------|--------|-------------|
-    | Mr. Fuzzy | 24,095 | $673,309 | 58.91% | 5.11% |
-    | Hudson Mini | 5,018 | — | 67.95% | 1.28% |
-    | Sugar Panda | — | — | 66.47% | 6.04% |
-    
-    => **Mr. Fuzzy = volume leader but quality risk. Hudson Mini = best economics (high margin, low refunds). Sugar Panda = margin threatened by refunds.**
+### 1. Product Economics
 
-2. **Portfolio Risk**:
-    - Revenue concentrated in Mr. Fuzzy (over-reliance on single SKU)
-    - Refund rates vary 1.28% to 6.04% by product
-    - Items/order: **1.24** (minimal bundling)
-    
-    => **Track refunds weekly by product. Grow Hudson Mini (safer profit). Build bundles to lift basket size.**
+| Product | Units | Profit | Margin | Refund Rate |
+|---------|-------|--------|--------|-------------|
+| Mr. Fuzzy | 24,095 | $673,309 | 58.91% | 5.11% |
+| Hudson Mini | 5,018 | $127,285 | 67.95% | 1.28% |
+| Sugar Panda | 6,847 | $185,437 | 66.47% | 6.04% |
 
-3. **Cross-Sell & Bundle Opportunity**:
-    - Items per order: **1.24** (very low)
-    - Most orders contain only one product
-    - Limited evidence of successful bundling or upselling
+**What this tells us:**
+- **Mr. Fuzzy** = volume leader driving most profit, but lowest margin and elevated refund rate indicate quality or expectation issues
+- **Hudson Mini** = best economics (high margin + lowest refunds = "safe profit"), but underutilized at low volume
+- **Sugar Panda** = strong margin threatened by highest refund rate (6.04%), signaling product quality or description accuracy problems
 
-    => **Introduce product bundles at cart and product detail page. Implement "frequently bought together" recommendations. Create starter packs or themed sets to increase basket size.**
+**Portfolio risk:** Over-reliance on Mr. Fuzzy for profitability. If refunds increase or customer satisfaction drops, profit takes a major hit.
 
-4. **Product Mix Strategy**:
-    - High-volume/low-margin (Mr. Fuzzy) vs. Low-volume/high-margin (Hudson Mini)
-    - Over-reliance on single SKU for profitability is risky
-    - Opportunity to grow safer, higher-margin products
+**Action:** Track refunds weekly by product. Improve quality/expectations for Mr. Fuzzy and Sugar Panda. Strategically grow Hudson Mini.
 
-    => **Strategically grow Hudson Mini through featured placement, landing page tests, and bundle inclusion. Balance portfolio risk by reducing dependence on single product.**
+---
 
+### 2. Refund Patterns
+
+- Refund rates vary 5x across products (1.28% to 6.04%)
+- Refunds concentrated in specific months (visible spikes in dashboard)
+- $77K annual revenue lost to refunds (4.33% overall rate)
+
+**What's causing refunds:**
+- Product doesn't match photos or description (expectation mismatch)
+- Quality issues (defects, damage in shipping)
+- Wrong size or specifications (unclear product info)
+- Customer regret (impulse purchase, no clear return policy)
+
+**Action:** Improve product page accuracy (photos, sizing, materials), strengthen QA checks, upgrade packaging, add post-purchase care instructions to reduce returns.
+
+---
+
+### 3. Cross-Sell & Bundle Opportunity
+
+- Items per order: **1.24** (very low compared to e-commerce benchmarks of 1.5-2.0)
+- Most orders contain only one product
+- Limited evidence of successful bundling or "frequently bought together" features
+
+**Why this matters:** Increasing items/order from 1.24 to 1.5 would boost AOV by 21% (from $57.39 to ~$70) without requiring more traffic or acquisition spend.
+
+**Action:** Introduce product bundles at cart and PDP, implement "frequently bought together" recommendations, create themed gift sets, offer bundle discounts to incentivize multi-item purchases.
+
+---
+
+### 4. Product Mix Strategy
+
+- High-volume/low-margin (Mr. Fuzzy) vs. Low-volume/high-margin (Hudson Mini)
+- Over-dependence on single SKU creates portfolio concentration risk
+- Opportunity to grow safer, higher-margin products to balance risk
+
+**Strategic recommendation:** Grow Hudson Mini through featured homepage placement, include in bundles, create promotional "starter pack" offers. Balance portfolio by reducing dependence on Mr. Fuzzy while maintaining its volume.
+
+---
 
 # Recommendations by Stakeholder
 
-| **Who** | **Strategy** | **Insight** | **Recommendation** |
-| ------- | ------------ | ----------- | ------------------ |
-| **CEO / General Manager** | **Grow profitably while keeping acquisition efficiency and product quality in check** | Business is highly profitable overall: $1.93M gross revenue, $1.13M profit, 61.03% net margin, 32,182 orders. Strong foundation but refunds and conversion leaks are limiting growth. | Keep scaling proven channels (search + core product) but prioritize fixing conversion leaks (PDP, checkout) and reducing refunds because these are the biggest "multipliers" on profit at current margin. |
-| **Marketing Lead** | **Allocate budget to channels that maximize Revenue per Session (RPS), not just traffic volume** | **bsearch brand** is highest efficiency: CVR 8.86%, RPS $5.21. **gsearch nonbrand** is the growth engine: 282,706 sessions, $1,068,211 net revenue (largest volume + revenue). **Paid social** is weak: CVR 3.21%, RPS $1.99, $21,227 net revenue (worst efficiency). | **Protect/expand brand search coverage**: increase budget caps, monitor impression share, defend against competitors. **Keep scaling nonbrand search** but optimize for intent: keyword pruning, landing page relevance, negative keywords. **Fix or cut paid social**: tighten targeting + creative + landing page alignment; if RPS doesn't improve after testing, reallocate budget to search/SEO. |
-| **Growth / Conversion (Web UX)** | **Improve conversion by attacking the biggest funnel drop-offs (highest impact)** | Funnel math shows two critical leaks: **Product Detail → Cart** (45% conversion, largest leak) and **Checkout → Purchase** (62% conversion, second biggest leak). Overall CVR is 6.81%; fixing these steps could push CVR to 10%+. | **Prioritize Product Detail → Cart**: stronger CTA placement, clearer value propositions, shipping/returns visibility upfront, remove friction (surprise costs), add trust cues (reviews, security badges), improve product photos/descriptions. **Prioritize Checkout → Purchase**: reduce form friction, enable guest checkout, fewer required fields, clearer error states, multiple payment options (PayPal, Apple Pay). Use channel/device cuts to A/B test: fix pages where high-volume channels leak most (especially nonbrand traffic). |
-| **Mobile Experience Owner** | **Close the desktop-mobile conversion gap to unlock "free" revenue from existing traffic** | Desktop carries most sessions; mobile conversion is visibly lower across all months (persistent gap in dashboard). Mobile users abandoning at higher rates, especially on product pages and checkout. | **Mobile-first checkout fixes**: autofill for forms, fewer required fields, sticky CTA button, faster page load times. **Mobile product detail improvements**: above-the-fold CTA, compress images without quality loss, simplify copy for smaller screens, clearer price + shipping display. **Report a simple KPI**: Mobile CVR vs Desktop CVR gap, track monthly to measure progress. |
-| **Product / Merchandising** | **Balance "profit per product" with "quality risk" (refunds) and portfolio dependence** | **Mr. Fuzzy** dominates: 24,095 units, $673,309 profit (largest by far) but lowest margin (58.91%) and elevated refund rate (5.11%). **Hudson Mini** has highest-quality economics: 67.95% margin, 1.28% refund rate but low volume (5,018 units). **Sugar Panda** has quality flag: 6.04% refund rate (highest) despite strong margin (66.47%). Overall: AOV $57.39, ASP $48.43, Items/order 1.24 (limited bundling/upsell). | **Reduce refund drivers on Sugar Panda + Mr. Fuzzy**: tighten product expectations (improve copy/images/sizing info), strengthen QA checks, upgrade packaging, add post-purchase guidance (care instructions). **Grow Hudson Mini intentionally** (it's "safe profit"): featured placement on homepage, include in bundles, create "starter offer" with discount. **Lift items per order (1.24)** via bundles/add-ons at cart and product page to raise AOV without needing more traffic. Create themed sets (e.g., "Trio Pack", "Gift Set"). |
-| **Finance / Operations** | **Protect margin while scaling volume** | Strong margin headroom (61% net margin) + measurable refund drag (4.33% refund rate overall). Visible refund spikes by month in dashboard. COGS % trending down over time, indicating improving unit economics as scale increases. | **Track refunds as weekly ops metric by product** (especially Sugar Panda / Mr. Fuzzy) and tie refund rate to product page changes and supplier/QA actions. Create refund "early warning system" if weekly rate exceeds threshold. **Keep watching COGS efficiency over time** (dashboard shows COGS % trending down) and ensure continued scale doesn't reverse gains. Negotiate supplier pricing as volume grows. **Monitor refund reasons** (if captured) to identify systemic issues: wrong size, damaged in shipping, doesn't match photos, etc. |
+| **Who** | **Goal** | **What the Data Shows** | **What to Do** |
+| ------- | -------- | ----------------------- | -------------- |
+| **CEO / General Manager** | Grow profitably while maintaining efficiency and quality | • $1.93M gross, $1.13M profit, 61% margin, 32K orders <br> • $77K lost to refunds (4.33% rate) <br> • Conversion leaks at PDP (45%) and checkout (62%) | • Scale proven channels (search + core products) <br> • Fix PDP and checkout drops (highest ROI) <br> • Reduce refund drivers (quality, expectations) <br> • Track margin alongside revenue growth |
+| **Marketing Lead** | Maximize Revenue per Session (RPS) | • Brand search: CVR 8.86%, RPS $5.21 (best efficiency, limited scale) <br> • Nonbrand search: 282K sessions, $1.07M revenue (volume leader) <br> • Paid social: CVR 3.21%, RPS $1.99 (worst performer) | • Protect brand search: increase caps, defend impression share <br> • Scale nonbrand: prune weak keywords, improve landing pages <br> • Fix or cut social: 30-day test, then reallocate if no improvement <br> • Double down on organic and referral |
+| **Growth / Conversion (Web UX)** | Fix biggest funnel leaks | • PDP → Cart: 45% (largest drop) <br> • Checkout → Purchase: 62% (second drop) <br> • Fixing both = $800K+ annual revenue <br> • Mobile underperforms desktop | • PDP: CTA above fold, show shipping upfront, add reviews/badges <br> • Checkout: guest option, fewer fields, show costs early, add PayPal/Apple Pay <br> • A/B test on nonbrand traffic first <br> • Segment by device/channel for targeted fixes |
+| **Mobile Experience Owner** | Close desktop-mobile conversion gap | • Desktop CVR > mobile consistently <br> • Mobile abandons at PDP and checkout <br> • Same acquisition cost, lower conversion | • Checkout: autofill, fewer fields, sticky CTA <br> • PDP: CTA above fold, compress images, simplify copy <br> • Optimize load speed: compress assets, lazy load <br> • Track Mobile vs Desktop CVR gap monthly |
+| **Product / Merchandising** | Balance profit with quality risk and diversify portfolio | • Mr. Fuzzy: 24K units, $673K profit, 58.91% margin, 5.11% refunds <br> • Hudson Mini: 67.95% margin, 1.28% refunds (best economics, low volume) <br> • Sugar Panda: 6.04% refunds (highest) <br> • Items/order: 1.24 | • Fix refunds: better images/sizing/descriptions, QA checks, packaging <br> • Grow Hudson Mini: homepage feature, bundles, promos <br> • Lift basket size: bundles at cart/PDP, "bought together" feature <br> • Reduce dependency on single SKU |
+| **Finance / Operations** | Protect margin while scaling | • 61% margin, strong cushion <br> • 4.33% refund rate = $77K drag <br> • Refund spikes by month <br> • COGS % declining (good scale economics) | • Track refunds weekly by product; alert if >5% <br> • Investigate spikes: tie to product changes, suppliers, shipping <br> • Capture refund reasons to identify root causes <br> • Negotiate supplier pricing as volume grows <br> • Build refund forecast model |
 
+# Setup Instructions
 
+## Quick Start (View Dashboard Only)
+
+If you just want to explore the dashboard without running SQL:
+
+1. **Download** `fuzzy_factory_dashboard.pbix` from `/powerbi`
+2. **Open** in Power BI Desktop (free download from Microsoft)
+3. **Explore** the four dashboard pages - all data is already embedded in the file
+
+> **Note:** The .pbix file contains a snapshot of the data, so you can interact with the dashboard immediately without any database setup.
+
+---
+
+## Full Setup Instruction (Replicate Analysis from Raw Data)
+
+If you want to replicate the entire analysis from scratch:
+
+### Step 1: Extract Data Files
+
+Some CSV files are compressed as `.gz` due to size. Extract them first:
+
+**On Windows:**
+- Use 7-Zip, WinRAR, or similar tool
+- Right-click `.gz` file → Extract Here
+
+**On Mac/Linux:**
+```bash
+gunzip website_sessions.csv.gz
+gunzip website_pageviews.csv.gz
+```
+
+### Step 2: Load Data into SQL Server
+
+1. Import CSV files from `/csv` into SQL Server
+2. Run SQL scripts in order:
+   - `Schema DDL final.sql` (creates database schema and tables)
+   - `Views (newest).sql` (creates analytical views for star schema)
+   - `Data Validation.sql` (optional: validates data quality and metric accuracy)
+
+### Step 3: Connect Power BI to Your Database
+
+1. Open `fuzzy_factory_dashboard.pbix` in Power BI Desktop
+2. Go to **Home → Transform Data → Data Source Settings**
+3. Update SQL Server connection to point to your instance
+4. Click **Refresh** to load data from your database
+5. Explore the dashboard and modify as needed
+
+### Step 4: Review DAX Measures
+
+- DAX formulas are documented in `/docs/dax_measures.md`
+- These show how KPIs are calculated (CVR, RPS, margins, etc.)
 
 # Project Structure
 
 ```
 fuzzy-factory-analytics/
 ├── csv/
-│   ├── website_sessions.csv
-│   ├── website_pageviews.csv
+│   ├── website_sessions.csv.gz (extract first)
+│   ├── website_pageviews.csv.gz (extract first)
 │   ├── orders.csv
 │   ├── order_items.csv
 │   ├── order_item_refunds.csv
@@ -427,19 +515,20 @@ fuzzy-factory-analytics/
 ├── powerbi/
 │   └── fuzzy_factory_dashboard.pbix
 ├── assets/
-│   ├── star_schema_before.png
-│   ├── star_schema_after.png
-│   ├── dashboard_page1.png
-│   ├── dashboard_page2.png
-│   ├── dashboard_page3.png
-│   └── dashboard_page4.png
+│   ├── original_rdbm.png
+│   ├── transformed_model.png
+│   ├── finance_report.png
+│   ├── marketing_report.png
+│   └── product_report.png
 ├── docs/
 │   └── dax_measures.md
 └── README.md
 ```
 
 # Key Takeaways
-The project: 
-- Identified $800K+ annual opportunity from fixing two funnel drop-offs (PDP and checkout)
-- Recommended channel reallocation that could improve marketing ROI by 20-30%
-- Highlighted product quality issues causing $77K in annual refund losses
+
+- **$800K+ annual revenue opportunity** from fixing two funnel drop-offs (Product Detail → Cart and Checkout → Purchase)
+- **20-30% marketing ROI improvement potential** by reallocating budget from underperforming channels (social) to high-efficiency channels (brand search, organic)
+- **$77K annual profit leak from refunds** - addressable through product quality improvements and better expectation setting
+
+This project demonstrates end-to-end BI capabilities: SQL data modeling → DAX metric development → stakeholder-focused visualization → actionable business recommendations.
