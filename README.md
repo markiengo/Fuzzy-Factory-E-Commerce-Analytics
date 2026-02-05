@@ -39,13 +39,6 @@
 3. Diagnose conversion funnel performance: where are the biggest drop-offs?
 4. Analyze product profitability: which products drive profit vs. refund risk?
 
-## Who is this project for?
-- Chief Executive Officer / General Manager
-- Marketing Lead (Paid & Organic Channels)
-- Growth & Conversion Optimization Team
-- Product & Merchandising Team
-- Finance & Operations Team
-
 # Dataset Description
 ## Data Source:
 - Source: E-commerce behavioral and transactional data (sessions, pageviews, orders, order items, refunds, products)
