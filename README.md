@@ -6,7 +6,7 @@
   - `Power BI`: DAX, Calculated Columns, Data Modeling, ETL, Data Visualization
   - `Excel`: Initial Data Exploration
 
-
+</div> <p align="center"> <img src="https://img.shields.io/badge/SQL_Server-CTEs%20%7C%20Window%20Functions%20%7C%20Views-blue?style=for-the-badge" /> <img src="https://img.shields.io/badge/Power_BI-DAX%20%7C%20Data%20Modeling%20%7C%20Visualization-yellow?style=for-the-badge" /> <img src="https://img.shields.io/badge/Excel-Data%20Exploration-green?style=for-the-badge" /> </p>
 
 # Table Of Contents
 1. [Executive Summary](#executive-summary)
