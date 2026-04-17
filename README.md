@@ -1,263 +1,148 @@
-# Fuzzy Factory — E-Commerce Analytics (2012–2015)
-
-**Author:** Markie Ngo · **Role:** Data Analyst · **Date:** Feb 2026
+# Fuzzy Factory — Decision-Ready E-Commerce Analytics
 
 <p align="center">
-  <img src="https://img.shields.io/badge/SQL_Server-CTEs%20%7C%20Window%20Functions%20%7C%20Views-blue?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Power_BI-DAX%20%7C%20Data%20Modeling%20%7C%20Visualization-yellow?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Excel-Data%20Exploration-green?style=for-the-badge" />
+  <strong>A Power BI case study that turns raw e-commerce data into a growth thesis, quantified upside, and an operator-level action plan.</strong>
 </p>
 
-> End-to-end BI system for Fuzzy Factory, an e-commerce plush toy retailer. Raw session and transaction data → SQL star schema → Power BI dashboard across four years of operations.
+<p align="center">
+  <img src="https://img.shields.io/badge/SQL_Server-Data%20Modeling%20%7C%20Views%20%7C%20QA-0F6CBD?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Power_BI-DAX%20%7C%20Semantic%20Model%20%7C%20Dashboard-F2C811?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Analytics-Growth%20Strategy%20%7C%20Funnel%20%7C%20Unit%20Economics-1F7A5C?style=for-the-badge" />
+</p>
 
-**Full analysis and recommendations → [REPORT.md](REPORT.md)**
+> **Big Idea:** Fuzzy Factory does not have a traffic problem. It has a conversion, merchandising, and product-mix problem. The business is already attracting enough demand to unlock roughly **$800K+ in additional annual revenue** before spending another dollar on acquisition.
 
----
+This project analyzes four years of sessions, pageviews, orders, order items, and refunds for a plush toy e-commerce business. The goal was not to build a dashboard for its own sake, but to answer the question that matters to operators: **where is revenue being left on the table, and what should the business do next?**
 
-## 📋 Contents
-
-1. [What This Answers](#-what-this-answers)
-2. [Dataset](#-dataset)
-3. [Data Model](#-data-model)
-4. [DAX Measures](#-dax-measures)
-5. [Setup](#-setup)
-6. [Project Structure](#-project-structure)
-
----
-
-## 🎯 What This Answers
-
-| # | Business Question |
-|---|------------------|
-| 1 | How is the business performing — revenue, profit, and margin over time? |
-| 2 | Which marketing channels are worth the spend? |
-| 3 | Where in the purchase funnel are we losing customers? |
-| 4 | Which products make money and which carry the most risk? |
+**Start here:** [Executive report](REPORT.md)<br>
+**Interactive dashboard:** `powerbi/Fuzzy Dashy.pbix`<br>
+**Static preview:** `powerbi/Fuzzy Static Dashboard.pdf`
 
 ---
 
-## 📁 Dataset
+## Executive Snapshot
 
-| Table | Contents | Grain |
-|-------|----------|-------|
-| `website_sessions.csv.gz` | Sessions with device type, UTM source, and campaign | Session |
-| `website_pageviews.csv.gz` | Every page URL hit within each session | Pageview |
-| `orders.csv` | Completed orders with revenue and COGS | Order |
-| `order_items.csv` | Line items per order with price and cost | Order item |
-| `order_item_refunds.csv` | Refund transactions linked to order items | Refund |
-| `products.csv` | 4-product catalog with launch dates | Product |
-
-> **Scale:** 480K+ sessions · 1M+ pageviews · 32K+ orders · 4 products · 2012–2015
+| Metric | Value |
+| --- | ---: |
+| Gross revenue | **$1.93M** |
+| Net revenue | **$1.85M** |
+| Profit | **$1.13M** |
+| Net margin | **61.03%** |
+| Orders | **32,182** |
+| Revenue upside from funnel fixes | **~$800K+** |
 
 ---
 
-## 🗂️ Data Model
+## Why This Analysis Is Different
 
-Star schema with two fact tables and three dimension tables.
+- It starts with a business constraint, not a chart gallery.
+- It distinguishes **volume** from **quality** using conversion rate, revenue per session, margin, refund rate, and basket size.
+- It combines **data modeling**, **measure design**, **dashboarding**, and **executive communication** in one deliverable.
+- It ends with recommendations by function: CEO, marketing, UX, product, finance, and operations.
 
-<details>
-<summary><strong>Original RDBMS Schema</strong></summary>
-<br>
-
-![Original RDBMS](assets/original_rdbm.png)
-
-</details>
-
-<details>
-<summary><strong>Transformed Star Schema (Power BI)</strong></summary>
-<br>
-
-![Transformed Star Schema](assets/transformed_model.png)
-
-</details>
-
-### Facts
-
-| Table | Grain | Key Columns |
-|-------|-------|-------------|
-| `fact_sales` | Order item | gross revenue, COGS, refunds, net profit |
-| `fact_funnel_performance` | Session | binary flags per funnel step |
-
-### Dimensions
-
-| Table | Contains |
-|-------|----------|
-| `dim_date` | Year, quarter, month, week, day |
-| `dim_products` | Product name, launch date |
-| `dim_sessions` | Device type, channel group, UTM parameters |
+In other words, this is not a dashboard-first project. It is a business-first analysis supported by a semantic model, a reporting layer, and a clear operating point of view.
 
 ---
 
-## 📐 DAX Measures
+## What I Found
 
-<details>
-<summary><strong>💰 Financial</strong></summary>
-<br>
+### 1. The biggest growth lever is inside the funnel
 
-```dax
-Gross Revenue = SUM(fact_sales[gross_revenue])
+Fuzzy Factory converts traffic into orders reasonably well overall, but two steps leak the most value:
 
-Net Revenue = SUM(fact_sales[net_revenue])
+- **Product Page -> Cart:** 45%
+- **Checkout -> Purchase:** 62%
 
-Profit = SUM(fact_sales[net_profit])
+These are high-intent users. Improving these steps creates more value than buying more top-of-funnel traffic.
 
-Net Margin % = DIVIDE([Profit], [Net Revenue], 0)
+### 2. The acquisition engine works, but channel quality is uneven
 
-Refund Rate % =
-DIVIDE(
-    CALCULATE(COUNT(fact_sales[order_item_id]), fact_sales[is_refunded] = 1),
-    COUNT(fact_sales[order_item_id]),
-    0
-)
+- **Brand search** is the most efficient channel: high CVR, high RPS, limited scale.
+- **Nonbrand search** is the growth engine: highest volume and strongest paid-channel revenue contribution.
+- **Paid social** underperforms on both conversion and revenue per session.
 
-AOV = DIVIDE([Net Revenue], [Total Orders], 0)
+The implication is straightforward: protect brand, scale nonbrand more intelligently, and force social to justify its budget.
 
-ASP = DIVIDE([Net Revenue], COUNT(fact_sales[order_item_id]), 0)
-```
+### 3. Merchandising is leaving money on the table
 
-</details>
+Average basket size is only **1.24 items per order**. That is the clearest sign that cross-sell, bundling, and cart merchandising are underdeveloped.
 
-<details>
-<summary><strong>📣 Marketing & Funnel</strong></summary>
-<br>
+Moving from **1.24 -> 1.50 items per order** implies roughly a **22% lift in average order value**.
 
-```dax
-Total Sessions = DISTINCTCOUNT(fact_funnel[website_session_id])
+### 4. Product portfolio risk is real
 
-CVR = DIVIDE([Total Orders], [Total Sessions], 0)
+- **Mr. Fuzzy** drives the business, but concentration risk is high.
+- **Hudson Mini** has the best unit economics and appears under-promoted.
+- **Sugar Panda** shows the highest refund pressure and needs closer merchandising or product QA review.
 
-RPS = DIVIDE([Net Revenue], [Total Sessions], 0)
-
-Landing to Catalog % =
-DIVIDE(
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[saw_products_page] = 1),
-    [Total Sessions], 0
-)
-
-Catalog to Product % =
-DIVIDE(
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[saw_individual_product] = 1),
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[saw_products_page] = 1),
-    0
-)
-
-Product to Cart % =
-DIVIDE(
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[saw_cart] = 1),
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[saw_individual_product] = 1),
-    0
-)
-
-Cart to Shipping % =
-DIVIDE(
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[saw_shipping] = 1),
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[saw_cart] = 1),
-    0
-)
-
-Shipping to Checkout % =
-DIVIDE(
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[saw_billing] = 1),
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[saw_shipping] = 1),
-    0
-)
-
-Checkout to Purchase % =
-DIVIDE(
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[saw_thank_you] = 1),
-    CALCULATE(COUNTROWS(fact_funnel), fact_funnel[saw_billing] = 1),
-    0
-)
-```
-
-</details>
-
-<details>
-<summary><strong>📦 Product</strong></summary>
-<br>
-
-```dax
-Units Sold = COUNT(fact_sales[order_item_id])
-
-Product Margin % = DIVIDE([Profit], [Net Revenue], 0)
-
-Product Refund Rate =
-DIVIDE(
-    CALCULATE(COUNT(fact_sales[order_item_id]), fact_sales[is_refunded] = 1),
-    COUNT(fact_sales[order_item_id]),
-    0
-)
-```
-
-</details>
+This is exactly the kind of problem a good analyst should surface: not just what sells, but what creates risk.
 
 ---
 
-## ⚙️ Setup
+## Dashboard Preview
 
-### View Dashboard Only
+| Executive performance | Channel and funnel performance |
+| --- | --- |
+| ![Executive performance dashboard](assets/finance_report.png) | ![Channel and funnel performance dashboard](assets/marketing_report.png) |
 
-> Download `fuzzy_factory_dashboard.pbix` from `/powerbi` and open in Power BI Desktop. All data is embedded — no database setup needed.
-
----
-
-### Replicate from Raw Data
-
-**Step 1 — Extract compressed files**
-
-```bash
-# Mac/Linux
-gunzip csv/website_sessions.csv.gz
-gunzip csv/website_pageviews.csv.gz
-```
-
-On Windows: right-click → Extract with 7-Zip or WinRAR.
-
-**Step 2 — Load into SQL Server**
-
-Run scripts in this order:
-
-| Script | Purpose |
-|--------|---------|
-| `sql/ddl.sql` | Creates tables and indexes |
-| `sql/views.sql` | Builds star schema views |
-| `sql/data_validation.sql` | *(Optional)* Data quality checks |
-| `sql/exploratory_da.sql` | *(Optional)* EDA queries |
-
-**Step 3 — Connect Power BI**
-
-1. Open `fuzzy_factory_dashboard.pbix`
-2. **Home → Transform Data → Data Source Settings**
-3. Update server name → **Refresh**
+| Product performance | Semantic model |
+| --- | --- |
+| ![Product performance dashboard](assets/product_report.png) | ![Transformed semantic model](assets/transformed_model.png) |
 
 ---
 
-## 📂 Project Structure
+## What This Demonstrates
 
-```
-fuzzyfactory/
-├── csv/
-│   ├── website_sessions.csv.gz
-│   ├── website_pageviews.csv.gz
-│   ├── orders.csv
-│   ├── order_items.csv
-│   ├── order_item_refunds.csv
-│   └── products.csv
-├── sql/
-│   ├── ddl.sql
-│   ├── views.sql
-│   ├── data_validation.sql
-│   └── exploratory_da.sql
-├── powerbi/
-│   └── fuzzy_factory_dashboard.pbix
-├── assets/
-│   ├── original_rdbm.png
-│   ├── transformed_model.png
-│   ├── finance_report.png
-│   ├── marketing_report.png
-│   └── product_report.png
-├── docs/
-│   └── dax.md
-├── REPORT.md
-└── README.md
-```
+- Building a decision-ready semantic model from raw transactional data
+- Designing business-facing DAX measures instead of relying on implicit aggregations
+- Framing findings in terms of **tradeoffs**, **upside**, and **next actions**
+- Translating analysis into a language executives, growth teams, and product teams can all use
+
+The strongest analytics work does not stop at "here is the data." It answers:
+
+1. What is happening?
+2. Why is it happening?
+3. What matters most?
+4. What should the business do next?
+
+This project is built around those four questions.
+
+---
+
+## Repository Guide
+
+| Path | What it contains | Why it matters |
+| --- | --- | --- |
+| [REPORT.md](REPORT.md) | Executive-grade written analysis | Fastest way to understand the thesis and recommendations |
+| `powerbi/Fuzzy Dashy.pbix` | Interactive Power BI dashboard | Primary presentation artifact |
+| `powerbi/Fuzzy Static Dashboard.pdf` | Static dashboard export | Quick visual review without opening Power BI |
+| [docs/dax.md](docs/dax.md) | Measure dictionary | Shows how the model was translated into business KPIs |
+| `sql/` | Data model and supporting SQL | Documents the warehouse-style structure behind the analysis |
+| `csv/` | Raw source data | Demonstrates source coverage and reproducibility |
+
+---
+
+## Business Questions Answered
+
+- Where is the company profitable, and where is it leaking profit?
+- Which acquisition channels deserve more budget, and which deserve less?
+- Which funnel steps carry the highest leverage?
+- Which products create concentration risk or refund drag?
+- How much upside exists before increasing spend?
+
+---
+
+## Review Path
+
+For the fastest path through the work, review the repo in this order:
+
+1. Read [REPORT.md](REPORT.md) for the business thesis and action plan.
+2. Open `powerbi/Fuzzy Dashy.pbix` or `powerbi/Fuzzy Static Dashboard.pdf` to inspect the visuals.
+3. Review [docs/dax.md](docs/dax.md) for the metric layer.
+4. Scan `sql/` if you want the underlying model structure.
+
+---
+
+## Closing Takeaway
+
+The point of this project is not the dashboard alone. The point is the ability to identify economic bottlenecks, size the opportunity, and turn analysis into decisions a business can actually act on.
